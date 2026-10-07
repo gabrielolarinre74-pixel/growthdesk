@@ -1,4 +1,5 @@
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
+import { RefreshCw, TriangleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -10,24 +11,31 @@ export function GeneralError({
   className,
   minimal = false,
 }: GeneralErrorProps) {
-  const navigate = useNavigate()
-  const { history } = useRouter()
   return (
-    <div className={cn('h-svh w-full', className)}>
-      <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
+    <div
+      className={cn('grid min-h-svh w-full place-items-center px-6', className)}
+    >
+      <div className='max-w-md text-center'>
         {!minimal && (
-          <h1 className='text-[7rem] leading-tight font-bold'>500</h1>
+          <span className='mx-auto flex size-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive'>
+            <TriangleAlert className='size-6' />
+          </span>
         )}
-        <span className='font-medium'>Oops! Something went wrong {`:')`}</span>
-        <p className='text-center text-muted-foreground'>
-          We apologize for the inconvenience. <br /> Please try again later.
+        <h1 className='mt-6 text-2xl font-semibold tracking-tight'>
+          Something broke on this screen
+        </h1>
+        <p className='mt-2 text-muted-foreground'>
+          Your data is stored in this browser and hasn’t been touched. Reload to
+          try again.
         </p>
         {!minimal && (
-          <div className='mt-6 flex gap-4'>
-            <Button variant='outline' onClick={() => history.go(-1)}>
-              Go Back
+          <div className='mt-8 flex justify-center gap-3'>
+            <Button variant='outline' asChild>
+              <Link to='/'>Open overview</Link>
             </Button>
-            <Button onClick={() => navigate({ to: '/' })}>Back to Home</Button>
+            <Button onClick={() => window.location.reload()}>
+              <RefreshCw /> Reload
+            </Button>
           </div>
         )}
       </div>
