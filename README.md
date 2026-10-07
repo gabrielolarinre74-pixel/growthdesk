@@ -8,7 +8,7 @@ Most small businesses track leads in a mix of WhatsApp chats, inboxes and spread
 - Which channels bring in leads that actually turn into paying clients?
 - Who do we need to call back today?
 
-**Live demo:** [Open in StackBlitz](https://stackblitz.com/github/gabrielolarinre74-pixel/growthdesk) (runs in your browser with sample data, no sign-up)
+**Try it:** clone the repo and run it locally in a couple of minutes (see [Run locally](#run-locally)). It opens in demo mode with fictional sample data, so there is nothing to sign up for and no backend to configure.
 
 ![Growth overview](docs/screenshots/dashboard.png)
 
@@ -60,7 +60,7 @@ Most small businesses track leads in a mix of WhatsApp chats, inboxes and spread
 - **Recharts** for charts
 - **Zod** + **React Hook Form** for validation
 - **Vitest** browser-mode tests with Playwright
-- **GitHub Actions** for lint, tests, build and deployment to GitHub Pages
+- **GitHub Actions** for lint, tests and build checks on every push
 
 ## Project structure
 
@@ -77,20 +77,38 @@ src/
 
 The business logic in `src/features/crm/lib/metrics.ts` (period comparison, win rate, weighted pipeline, monthly revenue and CSV generation) is made of pure functions with unit tests, so it can be moved to a backend unchanged.
 
-## Getting started
+## Run locally
+
+**Requirements:** Node.js 20 or newer and pnpm (`npm install -g pnpm` or `corepack enable`).
 
 ```bash
+git clone https://github.com/gabrielolarinre74-pixel/growthdesk.git
+cd growthdesk
 pnpm install
-pnpm dev          # http://localhost:5173
-pnpm test         # run the test suite (first time: pnpm test:browser:install)
-pnpm build        # production build in dist/
+pnpm dev
 ```
 
-No environment variables are required. See `.env.example`.
+Then open http://localhost:5173.
+
+### Demo mode
+
+The app starts with fictional sample data so every screen (Overview, Pipeline, Leads and Follow-ups) has something to show. Everything you add or change is saved in your browser's `localStorage`. Nothing is sent to a server. To start over, use **Reset** in the About page.
+
+### Other commands
+
+```bash
+pnpm test:browser:install   # once, downloads the headless browser used by the tests
+pnpm test
+pnpm lint
+pnpm build
+pnpm preview
+```
+
+`pnpm build` writes a static site to `dist/`, and `pnpm preview` serves it. No environment variables or API keys are needed (see `.env.example`).
 
 ## Deployment
 
-Every push to `main` runs lint, tests and the build, then publishes `dist/` to GitHub Pages (`.github/workflows/deploy.yml`). The app uses a relative base path and hash routing, so it also works on Netlify, Vercel, S3 or any static host without rewrite rules.
+The production build is a static site, so `dist/` can be hosted on Vercel, Netlify, Cloudflare Pages, S3 or any static host. GitHub Actions (`.github/workflows/ci.yml`) runs lint, tests and the build on every push and pull request. A GitHub Pages workflow is included, but it is turned off and only runs if someone starts it by hand.
 
 ## Roadmap
 
