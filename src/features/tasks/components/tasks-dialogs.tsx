@@ -58,8 +58,8 @@ export function TasksDialogs() {
             title={`Delete ${currentRow.id}?`}
             desc={
               <>
-                <strong>{currentRow.title}</strong> will be removed from
-                your follow-ups. This can&apos;t be undone.
+                <strong>{currentRow.title}</strong> will be removed from your
+                follow-ups. This can&apos;t be undone.
               </>
             }
             confirmText='Delete'

@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { AppHeader } from '@/features/crm/components/page-header'
 import { STAGE_META } from '@/features/crm/data/types'
 import {
@@ -128,29 +129,30 @@ export function Dashboard() {
     <>
       <AppHeader />
       <Main className='space-y-4'>
-        <div className='flex flex-wrap items-end justify-between gap-3'>
-          <div>
-            <h1 className='text-2xl font-bold tracking-tight'>
-              Growth overview
-            </h1>
-            <p className='text-muted-foreground'>
-              Where your revenue comes from, and what needs your attention
-              today.
-            </p>
-          </div>
-          <div className='flex items-center gap-2'>
-            <Tabs value={range} onValueChange={(v) => setRange(v as RangeKey)}>
-              <TabsList>
-                <TabsTrigger value='30d'>30 days</TabsTrigger>
-                <TabsTrigger value='90d'>90 days</TabsTrigger>
-                <TabsTrigger value='12m'>12 months</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Button variant='outline' onClick={exportReport}>
-              <Download /> Report
-            </Button>
-          </div>
-        </div>
+        <PageTitle
+          eyebrow='Overview'
+          title='Growth overview'
+          description='Where your revenue comes from, and what needs your attention today.'
+          actions={
+            <>
+              <div className='flex items-center gap-2'>
+                <Tabs
+                  value={range}
+                  onValueChange={(v) => setRange(v as RangeKey)}
+                >
+                  <TabsList>
+                    <TabsTrigger value='30d'>30 days</TabsTrigger>
+                    <TabsTrigger value='90d'>90 days</TabsTrigger>
+                    <TabsTrigger value='12m'>12 months</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <Button variant='outline' onClick={exportReport}>
+                  <Download /> Report
+                </Button>
+              </div>
+            </>
+          }
+        />
 
         <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           <KpiCard

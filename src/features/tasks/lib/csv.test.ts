@@ -10,7 +10,9 @@ describe('parseCsvRows', () => {
   })
 
   it('keeps new lines inside quoted fields and drops blank rows', () => {
-    expect(parseCsvRows('x,"line 1\nline 2"\n\n,\n')).toEqual([['x', 'line 1\nline 2']])
+    expect(parseCsvRows('x,"line 1\nline 2"\n\n,\n')).toEqual([
+      ['x', 'line 1\nline 2'],
+    ])
   })
 })
 
@@ -21,13 +23,23 @@ describe('parseFollowUpsCsv', () => {
     )
     expect(skipped).toBe(1)
     expect(tasks).toEqual([
-      { title: 'Call Acme', status: 'in progress', label: 'proposal', priority: 'high' },
+      {
+        title: 'Call Acme',
+        status: 'in progress',
+        label: 'proposal',
+        priority: 'high',
+      },
     ])
   })
 
   it('falls back to defaults for unknown or missing values', () => {
     const { tasks } = parseFollowUpsCsv('title,status\nPing Bolt,someday\n')
-    expect(tasks[0]).toEqual({ title: 'Ping Bolt', status: 'todo', label: 'call', priority: 'medium' })
+    expect(tasks[0]).toEqual({
+      title: 'Ping Bolt',
+      status: 'todo',
+      label: 'call',
+      priority: 'medium',
+    })
   })
 
   it('rejects a file without a title column', () => {

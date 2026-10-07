@@ -1,6 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,7 +18,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { labels } from '../data/data'
 import { taskSchema } from '../data/schema'
-import { useFollowUpsStore } from '@/stores/followups-store'
 import { useTasks } from './tasks-provider'
 
 type DataTableRowActionsProps<TData> = {

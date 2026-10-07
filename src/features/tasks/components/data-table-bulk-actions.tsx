@@ -3,7 +3,6 @@ import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { useFollowUpsStore } from '@/stores/followups-store'
-import { downloadCsv, toCsv } from '@/features/crm/lib/metrics'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -17,6 +16,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
+import { downloadCsv, toCsv } from '@/features/crm/lib/metrics'
 import { priorities, statuses } from '../data/data'
 import { type Task } from '../data/schema'
 import { TasksMultiDeleteDialog } from './tasks-multi-delete-dialog'
@@ -37,14 +37,22 @@ export function DataTableBulkActions<TData>({
 
   const handleBulkStatusChange = (status: string) => {
     const tasks = selectedTasks()
-    updateMany(tasks.map((t) => t.id), { status })
+    updateMany(
+      tasks.map((t) => t.id),
+      { status }
+    )
     table.resetRowSelection()
-    toast.success(`Moved ${plural(tasks.length)} to "${statuses.find((s) => s.value === status)?.label ?? status}"`)
+    toast.success(
+      `Moved ${plural(tasks.length)} to "${statuses.find((s) => s.value === status)?.label ?? status}"`
+    )
   }
 
   const handleBulkPriorityChange = (priority: string) => {
     const tasks = selectedTasks()
-    updateMany(tasks.map((t) => t.id), { priority })
+    updateMany(
+      tasks.map((t) => t.id),
+      { priority }
+    )
     table.resetRowSelection()
     toast.success(`Set priority to ${priority} for ${plural(tasks.length)}`)
   }

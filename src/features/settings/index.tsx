@@ -1,16 +1,25 @@
 import { useState } from 'react'
-import { Check, Download, Monitor, Moon, RotateCcw, Sun, Target } from 'lucide-react'
-import { toast } from 'sonner'
 import { fonts } from '@/config/fonts'
+import {
+  Check,
+  Download,
+  Monitor,
+  Moon,
+  RotateCcw,
+  Sun,
+  Target,
+} from 'lucide-react'
+import { toast } from 'sonner'
+import { useCrmStore } from '@/stores/crm-store'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { cn } from '@/lib/utils'
 import { useFont } from '@/context/font-provider'
 import { useTheme } from '@/context/theme-provider'
-import { useCrmStore } from '@/stores/crm-store'
-import { useFollowUpsStore } from '@/stores/followups-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { AppHeader } from '@/features/crm/components/page-header'
 import { STAGE_META } from '@/features/crm/data/types'
 import { downloadCsv, money, toCsv } from '@/features/crm/lib/metrics'
@@ -22,7 +31,10 @@ const THEMES = [
 ] as const
 
 // Literal class names so Tailwind generates them (also used by FontProvider on <html>)
-const FONT_OPTIONS: Record<(typeof fonts)[number], { label: string; className: string }> = {
+const FONT_OPTIONS: Record<
+  (typeof fonts)[number],
+  { label: string; className: string }
+> = {
   geist: { label: 'Geist', className: 'font-geist' },
   outfit: { label: 'Outfit', className: 'font-outfit' },
 }
@@ -60,7 +72,10 @@ export function Settings() {
       closed: l.closedAt?.slice(0, 10) ?? '',
       next_follow_up: l.nextFollowUp ?? '',
     }))
-    downloadCsv(`growthdesk-all-leads-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(rows))
+    downloadCsv(
+      `growthdesk-all-leads-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(rows)
+    )
     toast.success(`Exported ${rows.length} leads`)
   }
 
@@ -68,13 +83,16 @@ export function Settings() {
     <>
       <AppHeader />
       <Main className='max-w-4xl space-y-6'>
-        <div>
-          <p className='text-xs font-semibold tracking-[0.14em] text-primary uppercase'>Workspace</p>
-          <h1 className='mt-1 text-3xl font-semibold'>Settings</h1>
-          <p className='mt-1 text-muted-foreground'>Your goal, your look and your data.</p>
-        </div>
+        <PageTitle
+          eyebrow='Workspace'
+          title='Settings'
+          description='Your goal, your look and your data.'
+        />
 
-        <Section title='Monthly revenue goal' description='Drives the goal card and pace marker on the overview.'>
+        <Section
+          title='Monthly revenue goal'
+          description='Drives the goal card and pace marker on the overview.'
+        >
           <form
             className='flex flex-wrap items-end gap-3'
             onSubmit={(e) => {
@@ -86,7 +104,14 @@ export function Settings() {
               <Label htmlFor='goal'>Goal (USD per month)</Label>
               <div className='relative'>
                 <Target className='absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground' />
-                <Input id='goal' type='number' min={1} className='w-56 pl-9' value={goal} onChange={(e) => setGoal(e.target.value)} />
+                <Input
+                  id='goal'
+                  type='number'
+                  min={1}
+                  className='w-56 pl-9'
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                />
               </div>
             </div>
             <Button type='submit'>Save goal</Button>
@@ -103,7 +128,8 @@ export function Settings() {
                 aria-pressed={theme === value}
                 className={cn(
                   'flex items-center gap-3 rounded-xl border p-4 text-left text-sm font-medium transition hover:border-primary/50',
-                  theme === value && 'border-primary bg-accent text-accent-foreground ring-1 ring-primary'
+                  theme === value &&
+                    'border-primary bg-accent text-accent-foreground ring-1 ring-primary'
                 )}
               >
                 <Icon className='size-4' />
@@ -122,7 +148,9 @@ export function Settings() {
                 className={cn(
                   FONT_OPTIONS[f].className,
                   'rounded-full border px-4 py-1.5 text-sm transition',
-                  font === f ? 'border-foreground bg-foreground text-background' : 'hover:border-foreground/40'
+                  font === f
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'hover:border-foreground/40'
                 )}
               >
                 {FONT_OPTIONS[f].label}
@@ -131,7 +159,10 @@ export function Settings() {
           </div>
         </Section>
 
-        <Section title='Your data' description='Everything is stored in this browser. Nothing is sent to a server.'>
+        <Section
+          title='Your data'
+          description='Everything is stored in this browser. Nothing is sent to a server.'
+        >
           <div className='flex flex-wrap gap-3'>
             <Button variant='outline' onClick={exportAll}>
               <Download /> Export all leads (CSV)
@@ -139,7 +170,12 @@ export function Settings() {
             <Button
               variant='outline'
               onClick={() => {
-                if (!window.confirm('Replace all leads and follow-ups with fresh sample data?')) return
+                if (
+                  !window.confirm(
+                    'Replace all leads and follow-ups with fresh sample data?'
+                  )
+                )
+                  return
                 resetDemo()
                 resetTasks()
                 toast.success('Sample data restored')
@@ -148,14 +184,24 @@ export function Settings() {
               <RotateCcw /> Reset sample data
             </Button>
           </div>
-          <p className='mt-3 text-xs text-muted-foreground'>{leads.length} leads in this workspace.</p>
+          <p className='mt-3 text-xs text-muted-foreground'>
+            {leads.length} leads in this workspace.
+          </p>
         </Section>
       </Main>
     </>
   )
 }
 
-function Section({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description: string
+  children: React.ReactNode
+}) {
   return (
     <section className='overflow-hidden rounded-2xl border bg-card shadow-[var(--shadow-card)]'>
       <header className='border-b bg-muted/40 px-6 py-4'>

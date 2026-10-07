@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { AppHeader } from '@/features/crm/components/page-header'
 
 const points = [
@@ -48,14 +49,11 @@ export function About() {
     <>
       <AppHeader />
       <Main className='space-y-6'>
-        <div>
-          <h1 className='text-2xl font-bold tracking-tight'>About this demo</h1>
-          <p className='max-w-2xl text-muted-foreground'>
-            GrowthDesk is a lightweight CRM and growth dashboard for agencies,
-            studios and service businesses. The companies and people you see are
-            randomly generated sample data, not real clients.
-          </p>
-        </div>
+        <PageTitle
+          eyebrow='About'
+          title='About this demo'
+          description='GrowthDesk is a lightweight CRM and growth dashboard for agencies, studios and service businesses. The companies and people you see are randomly generated sample data, not real clients.'
+        />
         <div className='grid gap-4 sm:grid-cols-2'>
           {points.map((p) => (
             <Card key={p.title}>

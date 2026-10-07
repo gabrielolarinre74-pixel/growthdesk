@@ -6,12 +6,19 @@ import { userEvent } from 'vitest/browser'
 import { useFollowUpsStore } from '@/stores/followups-store'
 import { TasksMultiDeleteDialog } from './tasks-multi-delete-dialog'
 
-
 describe('TasksMultiDeleteDialog', () => {
-  const task = (id: string) => ({ id, title: id, status: 'todo', label: 'call', priority: 'low' })
+  const task = (id: string) => ({
+    id,
+    title: id,
+    status: 'todo',
+    label: 'call',
+    priority: 'low',
+  })
   beforeEach(() => {
     vi.clearAllMocks()
-    useFollowUpsStore.setState({ tasks: [task('FU-1001'), task('FU-1002'), task('FU-1003')] })
+    useFollowUpsStore.setState({
+      tasks: [task('FU-1001'), task('FU-1002'), task('FU-1003')],
+    })
   })
 
   it('renders the dialog with the correct title, description, input and buttons', async () => {
@@ -134,7 +141,9 @@ describe('TasksMultiDeleteDialog', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
 
     await vi.waitFor(() => expect(resetRowSelection).toHaveBeenCalledOnce())
-    expect(useFollowUpsStore.getState().tasks.map((t) => t.id)).toEqual(['FU-1003'])
+    expect(useFollowUpsStore.getState().tasks.map((t) => t.id)).toEqual([
+      'FU-1003',
+    ])
   })
 
   it('deletes successfully when press Enter key on the confirm delete input', async () => {

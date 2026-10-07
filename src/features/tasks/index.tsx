@@ -1,10 +1,11 @@
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { AppHeader } from '@/features/crm/components/page-header'
 import { TasksDialogs } from './components/tasks-dialogs'
 import { TasksPrimaryButtons } from './components/tasks-primary-buttons'
 import { TasksProvider } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
-import { useFollowUpsStore } from '@/stores/followups-store'
 
 export function Tasks() {
   const tasks = useFollowUpsStore((s) => s.tasks)
@@ -13,15 +14,16 @@ export function Tasks() {
       <AppHeader fixed />
 
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
-        <div className='flex flex-wrap items-end justify-between gap-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Follow-ups</h2>
-            <p className='text-muted-foreground'>
-              Calls, emails and proposals you owe your leads and clients.
-            </p>
-          </div>
-          <TasksPrimaryButtons />
-        </div>
+        <PageTitle
+          eyebrow='Follow-ups'
+          title='Follow-ups'
+          description='Calls, emails and proposals you owe your leads and clients.'
+          actions={
+            <>
+              <TasksPrimaryButtons />
+            </>
+          }
+        />
         <TasksTable data={tasks} />
       </Main>
 

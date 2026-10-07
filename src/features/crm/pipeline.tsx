@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { LeadDialog } from './components/lead-dialog'
 import { AppHeader } from './components/page-header'
 import { type Lead, type Stage, STAGES, STAGE_META } from './data/types'
@@ -57,29 +58,28 @@ export function Pipeline() {
 
   return (
     <>
-      <AppHeader fixed />
+      <AppHeader fixed quickAdd={false} />
       <Main fixed className='flex flex-1 flex-col gap-4'>
-        <div className='flex flex-wrap items-end justify-between gap-3'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>
-              Sales pipeline
-            </h2>
-            <p className='text-muted-foreground'>
-              Drag deals between stages. Changes are saved in your browser.
-            </p>
-          </div>
-          <div className='flex gap-2'>
-            <Input
-              placeholder='Search company, contact, service…'
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className='w-64'
-            />
-            <Button onClick={() => setCreatingIn('new')}>
-              <Plus /> New lead
-            </Button>
-          </div>
-        </div>
+        <PageTitle
+          eyebrow='Pipeline'
+          title='Sales pipeline'
+          description='Drag deals between stages. Changes are saved in your browser.'
+          actions={
+            <>
+              <div className='flex gap-2'>
+                <Input
+                  placeholder='Search company, contact, service…'
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className='w-64'
+                />
+                <Button onClick={() => setCreatingIn('new')}>
+                  <Plus /> New lead
+                </Button>
+              </div>
+            </>
+          }
+        />
         <div className='-mx-4 flex flex-1 gap-3 overflow-x-auto px-4 pb-4'>
           {STAGES.map((stage) => {
             const items = byStage[stage]

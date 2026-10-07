@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { useFollowUpsStore } from '@/stores/followups-store'
-import { parseFollowUpsCsv } from '../lib/csv'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -23,6 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { parseFollowUpsCsv } from '../lib/csv'
 
 const formSchema = z.object({
   file: z
@@ -32,7 +32,8 @@ const formSchema = z.object({
     })
     .refine(
       (files) =>
-        files?.[0]?.type === 'text/csv' || /\.csv$/i.test(files?.[0]?.name ?? ''),
+        files?.[0]?.type === 'text/csv' ||
+        /\.csv$/i.test(files?.[0]?.name ?? ''),
       'Please choose a .csv file.'
     )
     .refine(
@@ -70,7 +71,9 @@ export function TasksImportDialog({
       const count = importTasks(tasks)
       toast.success(
         `Imported ${count} follow-up${count > 1 ? 's' : ''}` +
-          (skipped ? ` (${skipped} empty row${skipped > 1 ? 's' : ''} skipped)` : '')
+          (skipped
+            ? ` (${skipped} empty row${skipped > 1 ? 's' : ''} skipped)`
+            : '')
       )
       onOpenChange(false)
       form.reset()
@@ -93,7 +96,8 @@ export function TasksImportDialog({
         <DialogHeader className='text-start'>
           <DialogTitle>Import follow-ups</DialogTitle>
           <DialogDescription>
-            Upload a CSV with a title column. Status, type and priority are optional.
+            Upload a CSV with a title column. Status, type and priority are
+            optional.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

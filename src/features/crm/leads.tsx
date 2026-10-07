@@ -34,6 +34,7 @@ import {
   DataTableToolbar,
 } from '@/components/data-table'
 import { Main } from '@/components/layout/main'
+import { PageTitle } from '@/components/page-title'
 import { LeadDialog } from './components/lead-dialog'
 import { AppHeader } from './components/page-header'
 import { type Lead, SERVICES, SOURCES, STAGES, STAGE_META } from './data/types'
@@ -195,27 +196,25 @@ export function Leads() {
 
   return (
     <>
-      <AppHeader fixed />
+      <AppHeader fixed quickAdd={false} />
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
-        <div className='flex flex-wrap items-end justify-between gap-2'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>
-              Leads & clients
-            </h2>
-            <p className='text-muted-foreground'>
-              Every enquiry in one place. Filter, export or open a lead to
-              update it.
-            </p>
-          </div>
-          <div className='flex gap-2'>
-            <Button variant='outline' onClick={exportCsv}>
-              <Download /> Export CSV
-            </Button>
-            <Button onClick={() => setCreating(true)}>
-              <Plus /> New lead
-            </Button>
-          </div>
-        </div>
+        <PageTitle
+          eyebrow='Contacts'
+          title='Leads & clients'
+          description='Every enquiry in one place. Filter, export or open a lead to update it.'
+          actions={
+            <>
+              <div className='flex gap-2'>
+                <Button variant='outline' onClick={exportCsv}>
+                  <Download /> Export CSV
+                </Button>
+                <Button onClick={() => setCreating(true)}>
+                  <Plus /> New lead
+                </Button>
+              </div>
+            </>
+          }
+        />
         <div className='flex flex-1 flex-col gap-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
           <DataTableToolbar
             table={table}

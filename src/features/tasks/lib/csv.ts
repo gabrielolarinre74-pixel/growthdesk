@@ -37,16 +37,26 @@ export function parseCsvRows(text: string): string[][] {
   return rows.filter((r) => r.some((f) => f.trim() !== ''))
 }
 
-const pick = (allowed: { value: string; label: string }[], raw: string | undefined, fallback: string) => {
+const pick = (
+  allowed: { value: string; label: string }[],
+  raw: string | undefined,
+  fallback: string
+) => {
   const v = (raw ?? '').trim().toLowerCase()
-  return allowed.find((o) => o.value === v || o.label.toLowerCase() === v)?.value ?? fallback
+  return (
+    allowed.find((o) => o.value === v || o.label.toLowerCase() === v)?.value ??
+    fallback
+  )
 }
 
 /**
  * Turns a CSV export (needs a `title` column; `status`, `label`/`type` and `priority` optional)
  * into follow-ups. Unknown values fall back to sensible defaults; rows without a title are skipped.
  */
-export function parseFollowUpsCsv(text: string): { tasks: NewTask[]; skipped: number } {
+export function parseFollowUpsCsv(text: string): {
+  tasks: NewTask[]
+  skipped: number
+} {
   const [header, ...body] = parseCsvRows(text)
   if (!header) return { tasks: [], skipped: 0 }
   const cols = header.map((h) => h.trim().toLowerCase())

@@ -57,7 +57,9 @@ describe('TasksImportDialog', () => {
     )
 
     const csv = new File(
-      ['title,status,type,priority\nCall Acme back,todo,call,high\n"Send quote, v2",,email,\n'],
+      [
+        'title,status,type,priority\nCall Acme back,todo,call,high\n"Send quote, v2",,email,\n',
+      ],
       'tasks.csv',
       { type: 'text/csv' }
     )

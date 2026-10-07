@@ -7,20 +7,29 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { LeadDialog } from './lead-dialog'
 
 /** Top bar shared by every workspace page: search, quick "New lead" and theme. */
-export function AppHeader({ fixed }: { fixed?: boolean }) {
+export function AppHeader({
+  fixed,
+  quickAdd = true,
+}: {
+  fixed?: boolean
+  /** Hide the header's "New lead" button on pages that already have one. */
+  quickAdd?: boolean
+}) {
   const [open, setOpen] = useState(false)
   return (
     <Header fixed={fixed}>
       <Search className='me-auto' />
-      <Button
-        size='sm'
-        className='hidden rounded-full px-4 shadow-[var(--brand-glow)] sm:inline-flex'
-        onClick={() => setOpen(true)}
-      >
-        <Plus /> New lead
-      </Button>
+      {quickAdd && (
+        <Button
+          size='sm'
+          className='hidden rounded-full px-4 shadow-[var(--brand-glow)] sm:inline-flex'
+          onClick={() => setOpen(true)}
+        >
+          <Plus /> New lead
+        </Button>
+      )}
       <ThemeSwitch />
-      <LeadDialog open={open} onOpenChange={setOpen} />
+      {quickAdd && <LeadDialog open={open} onOpenChange={setOpen} />}
     </Header>
   )
 }
