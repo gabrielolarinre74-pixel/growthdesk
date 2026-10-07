@@ -15,10 +15,10 @@ export const STAGE_META: Record<
   { label: string; color: string; probability: number }
 > = {
   new: { label: 'New lead', color: 'bg-sky-500', probability: 0.1 },
-  contacted: { label: 'Contacted', color: 'bg-indigo-500', probability: 0.25 },
+  contacted: { label: 'Contacted', color: 'bg-cyan-500', probability: 0.25 },
   proposal: {
     label: 'Proposal sent',
-    color: 'bg-violet-500',
+    color: 'bg-blue-500',
     probability: 0.5,
   },
   negotiation: {
