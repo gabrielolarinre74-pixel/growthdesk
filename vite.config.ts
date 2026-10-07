@@ -8,8 +8,8 @@ import { playwright } from '@vitest/browser-playwright'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Relative base so the build works from any sub-path (e.g. GitHub Pages)
-  base: './',
+  // Relative base by default so the build works from any sub-path; override with VITE_BASE
+  base: process.env.VITE_BASE || './',
   plugins: [
     tanstackRouter({
       target: 'react',
