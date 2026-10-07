@@ -1,13 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import {
-  AlarmClock,
-  BadgeDollarSign,
-  Download,
-  Handshake,
-  Percent,
-  Users,
-} from 'lucide-react'
+import { AlarmClock, Download, Handshake, Percent, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCrmStore } from '@/stores/crm-store'
 import { cn } from '@/lib/utils'
@@ -39,7 +32,7 @@ import {
   toCsv,
 } from '@/features/crm/lib/metrics'
 import { GoalCard } from './components/goal-card'
-import { KpiCard } from './components/kpi-card'
+import { HeroKpi, KpiStat } from './components/kpi-card'
 import { RevenueChart } from './components/revenue-chart'
 
 export function Dashboard() {
@@ -135,7 +128,7 @@ export function Dashboard() {
           description='Where your revenue comes from, and what needs your attention today.'
           actions={
             <>
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-wrap items-center gap-2'>
                 <Tabs
                   value={range}
                   onValueChange={(v) => setRange(v as RangeKey)}
@@ -154,33 +147,37 @@ export function Dashboard() {
           }
         />
 
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-          <KpiCard
-            title='Won revenue'
+        <div className='grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]'>
+          <HeroKpi
+            label={`Won revenue · ${rangeLabel}`}
             value={money(current.wonRevenue)}
-            icon={BadgeDollarSign}
             change={change.wonRevenue}
             hint={`vs previous ${range === '12m' ? 'year' : 'period'}`}
+            bars={monthly
+              .slice(-6)
+              .map((m) => ({ label: m.label, value: m.revenue }))}
           />
-          <KpiCard
-            title='New leads'
-            value={String(current.newLeads)}
-            icon={Users}
-            change={change.newLeads}
-            hint={`vs previous ${range === '12m' ? 'year' : 'period'}`}
-          />
-          <KpiCard
-            title='Win rate'
-            value={`${Math.round(current.winRate * 100)}%`}
-            icon={Percent}
-            hint={`${current.wonDeals} won · avg ${money(current.avgDeal)}`}
-          />
-          <KpiCard
-            title='Open pipeline'
-            value={money(current.pipelineValue)}
-            icon={Handshake}
-            hint={`${money(current.weightedPipeline)} weighted by stage`}
-          />
+          <div className='grid divide-y rounded-2xl border bg-card shadow-[var(--shadow-card)] sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
+            <KpiStat
+              title='New leads'
+              value={String(current.newLeads)}
+              icon={Users}
+              change={change.newLeads}
+              hint={`vs previous ${range === '12m' ? 'year' : 'period'}`}
+            />
+            <KpiStat
+              title='Win rate'
+              value={`${Math.round(current.winRate * 100)}%`}
+              icon={Percent}
+              hint={`${current.wonDeals} won · avg ${money(current.avgDeal)}`}
+            />
+            <KpiStat
+              title='Open pipeline'
+              value={money(current.pipelineValue)}
+              icon={Handshake}
+              hint={`${money(current.weightedPipeline)} weighted`}
+            />
+          </div>
         </div>
 
         <div className='grid gap-4 lg:grid-cols-7'>
