@@ -1,32 +1,14 @@
 import {
-  Bell,
   HelpCircle,
   KanbanSquare,
   LayoutDashboard,
   ListTodo,
-  Monitor,
-  Palette,
   Settings,
-  UserCog,
   Users,
-  Wrench,
 } from 'lucide-react'
-import { Logo } from '@/assets/logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
-  user: {
-    name: 'Gabriel Zion',
-    email: 'gabrielzionath@gmail.com',
-    avatar: '',
-  },
-  teams: [
-    {
-      name: 'GrowthDesk',
-      logo: Logo,
-      plan: 'by Gabriel.ATH',
-    },
-  ],
   navGroups: [
     {
       title: 'Grow',
@@ -40,21 +22,7 @@ export const sidebarData: SidebarData = {
     {
       title: 'Workspace',
       items: [
-        {
-          title: 'Settings',
-          icon: Settings,
-          items: [
-            { title: 'Profile', url: '/settings', icon: UserCog },
-            { title: 'Account', url: '/settings/account', icon: Wrench },
-            { title: 'Appearance', url: '/settings/appearance', icon: Palette },
-            {
-              title: 'Notifications',
-              url: '/settings/notifications',
-              icon: Bell,
-            },
-            { title: 'Display', url: '/settings/display', icon: Monitor },
-          ],
-        },
+        { title: 'Settings', url: '/settings', icon: Settings },
         { title: 'About this demo', url: '/about', icon: HelpCircle },
       ],
     },
