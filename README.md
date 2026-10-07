@@ -1,85 +1,97 @@
 # GrowthDesk
 
-**A lightweight CRM and growth dashboard for agencies, studios and service businesses.**
+**The sales workspace for agencies, studios and service businesses: every lead, deal and follow-up in one calm place, with a revenue goal you can actually see.**
 
-Most small businesses track leads in a mix of WhatsApp chats, inboxes and spreadsheets, so deals go cold and nobody knows which marketing channel actually brings in money. GrowthDesk puts every enquiry, deal and follow-up in one clean workspace and answers the questions owners ask every week:
+Small teams lose money in the gaps: an enquiry that sat in an inbox, a proposal nobody chased, a marketing channel that looked busy but never closed. GrowthDesk gives owners one screen that answers the weekly questions:
 
-- How much did we close this month, and are we on track for our goal?
-- Which channels bring in leads that actually turn into paying clients?
-- Who do we need to call back today?
+- How much have we closed this month, and are we on pace for the goal?
+- Which channels bring leads that turn into paying clients?
+- Who are we supposed to call back today?
 
-**Try it:** clone the repo and run it locally in a couple of minutes (see [Run locally](#run-locally)). It opens in demo mode with fictional sample data, so there is nothing to sign up for and no backend to configure.
+It opens in **demo mode** with fictional sample data, so you can explore every screen without signing up or configuring a backend. See [Run locally](#run-locally).
 
-![Growth overview](docs/screenshots/dashboard.png)
+![GrowthDesk overview](docs/screenshots/overview.png)
 
 ## Features
 
-### Growth overview
-- KPI cards for won revenue, new leads, win rate and open pipeline, each compared with the previous period
-- 30-day / 90-day / 12-month range switcher
-- Revenue-by-month area chart based on the date each deal was actually closed
-- Lead sources with lead count and win rate per channel, a stage-by-stage pipeline breakdown and revenue by service
-- **Monthly revenue goal** with a progress bar, a "where you should be today" marker and an on-track / behind-pace indicator. The goal can be edited inline and is saved.
-- **Follow-ups due** panel that highlights overdue call-backs
-- One-click **CSV report** for the selected period: KPIs, sources and monthly revenue
+**Overview**
+- Featured revenue card for the selected period, with change versus the previous period and the last six months as mini bars
+- KPI strip: new leads, win rate (with average deal size) and open pipeline (raw and stage-weighted)
+- 30-day, 90-day and 12-month ranges
+- Revenue-by-month chart based on the date each deal closed
+- Monthly goal card with a "where you should be today" pace marker and an inline editor
+- Follow-ups due, with overdue call-backs flagged
+- Lead sources, pipeline breakdown and revenue by service
+- One-click CSV report for the selected period
 
-### Sales pipeline
-- Kanban board with six stages (New lead → Contacted → Proposal sent → Negotiation → Won / Lost)
-- Drag-and-drop between stages, with a deal count and total value on every column
-- Keyboard accessible cards (Tab + Enter opens a deal)
-- Overdue follow-up dates are flagged on the card
-- Won and Lost dates are recorded automatically when a deal moves, and cleared if it is reopened
-- Instant search across company, contact, service and source
+**Pipeline**
+- Six-stage board (New lead, Contacted, Proposal sent, Negotiation, Won, Lost) with drag and drop
+- Count and value per stage; overdue follow-up dates flagged on each card
+- Won and lost dates are stamped automatically and cleared when a deal is reopened
+- Instant search across company, contact, service and source; keyboard accessible cards
 
-### Leads & clients
-- Sortable, filterable table (stage, service, source) with free-text search across company, contact and email
-- Bulk select and delete
-- **CSV export** of exactly what is filtered. Exported values are escaped against spreadsheet formula injection.
-- Add and edit leads in a validated form (zod + react-hook-form): required fields, email format, deal value limits and notes
+**Leads & clients**
+- Sortable table with stage, service and source filters plus free-text search
+- Validated lead form (zod and react-hook-form) with email, value and date checks
+- Bulk delete, and CSV export of exactly what is filtered (values are escaped against spreadsheet formula injection)
 
-### Follow-ups
-- Task list for calls, emails, proposals and onboarding steps, with status, priority and filters
+**Follow-ups**
+- Calls, emails, proposals and onboarding steps with status, type and priority, saved in the browser
+- Summary strip: open, in progress, high priority and done
+- Import follow-ups from a CSV file (a `title` column is all it needs; quoted fields and Excel exports work)
+- Bulk status and priority changes, CSV export of selected rows, duplicate, mark as done
 
-### Workspace
-- Light, dark and system themes, RTL support, collapsible sidebar and a ⌘K command palette
-- Data is persisted in `localStorage`, so the demo works offline and nothing leaves the browser
-- "Reset sample data" on the About page
+**Workspace**
+- Sidebar card that tracks won revenue against the monthly goal on every page
+- One settings page for the revenue goal, theme (light, dark or match device), font, full CSV backup and sample-data reset
+- ⌘K / Ctrl+K command palette, quick "New lead" from any page, collapsible sidebar
 
-| Pipeline | Leads |
+## Screenshots
+
+| Pipeline | Leads & clients |
 | --- | --- |
 | ![Pipeline](docs/screenshots/pipeline.png) | ![Leads](docs/screenshots/leads.png) |
-| **New lead form** | **Dark mode** |
-| ![New lead](docs/screenshots/new-lead.png) | ![Dark mode](docs/screenshots/dashboard-dark.png) |
+| **New lead** | **Follow-ups** |
+| ![New lead form](docs/screenshots/new-lead.png) | ![Follow-ups](docs/screenshots/follow-ups.png) |
+| **Settings** | **Dark mode** |
+| ![Settings](docs/screenshots/settings.png) | ![Overview in dark mode](docs/screenshots/overview-dark.png) |
+
+<img src="docs/screenshots/mobile.png" alt="GrowthDesk on a phone" width="300" />
+
+## Design
+
+- **Palette:** fresh green on white, near-black ink and a black sidebar; neutral charcoal in dark mode
+- **Type:** Outfit for headings and figures, Geist for interface text, both self-hosted
+- **Details:** a featured black revenue card with a soft green glow, joined KPI strip, eyebrow page titles and layered card shadows
 
 ## Tech stack
 
-- **React 19 + TypeScript**, built with **Vite**
-- **TanStack Router** (hash history for static hosting) and **TanStack Table**
-- **Tailwind CSS v4** with shadcn/ui and Radix primitives
-- **Zustand** with the `persist` middleware for state and storage
-- **Recharts** for charts
-- **Zod** + **React Hook Form** for validation
-- **Vitest** browser-mode tests with Playwright
-- **GitHub Actions** for lint, tests and build checks on every push
+- React 19 and TypeScript, built with Vite
+- TanStack Router (file-based routes, hash history for static hosting) and TanStack Table
+- Tailwind CSS v4 with Radix UI primitives
+- Zustand with `persist` for local-first storage
+- Recharts, zod and React Hook Form
+- Vitest in browser mode (Playwright) for component, store and logic tests
+- GitHub Actions for lint, tests and build on every push
 
 ## Project structure
 
 ```
 src/
   features/
-    crm/             # leads domain: types, sample data, metrics, pipeline, leads table, lead form
-    dashboard/       # growth overview, KPI cards, goal card, revenue chart
-    tasks/           # follow-ups
-    about/           # demo info + reset
-  stores/crm-store.ts  # persisted Zustand store
-  routes/            # file-based routes (TanStack Router)
+    dashboard/   overview, featured revenue card, goal card, chart
+    crm/         lead types, sample data, metrics, pipeline, leads table, lead form
+    tasks/       follow-ups table, CSV import, summary
+    settings/    goal, appearance and data
+  stores/        persisted Zustand stores (leads, follow-ups)
+  routes/        file-based routes
 ```
 
-The business logic in `src/features/crm/lib/metrics.ts` (period comparison, win rate, weighted pipeline, monthly revenue and CSV generation) is made of pure functions with unit tests, so it can be moved to a backend unchanged.
+The numbers on the overview come from pure functions in `src/features/crm/lib/metrics.ts` (period comparison, win rate, weighted pipeline, monthly revenue, CSV), all unit tested and ready to move to a backend unchanged.
 
 ## Run locally
 
-**Requirements:** Node.js 20 or newer and pnpm (`npm install -g pnpm` or `corepack enable`).
+Requirements: Node.js 20 or newer and pnpm (`corepack enable` or `npm install -g pnpm`).
 
 ```bash
 git clone https://github.com/gabrielolarinre74-pixel/growthdesk.git
@@ -88,33 +100,33 @@ pnpm install
 pnpm dev
 ```
 
-Then open http://localhost:5173.
+Open http://localhost:5173.
 
 ### Demo mode
 
-The app starts with fictional sample data so every screen (Overview, Pipeline, Leads and Follow-ups) has something to show. Everything you add or change is saved in your browser's `localStorage`. Nothing is sent to a server. To start over, use **Reset** in the About page.
+The app starts with fictional companies and people so every screen has something to show. Anything you add or change is stored in your browser's `localStorage` and never sent anywhere. **Settings → Reset sample data** starts fresh.
 
 ### Other commands
 
 ```bash
-pnpm test:browser:install   # once, downloads the headless browser used by the tests
+pnpm test:browser:install   # once: downloads the headless browser used by the tests
 pnpm test
 pnpm lint
-pnpm build
+pnpm build                  # static site in dist/
 pnpm preview
 ```
 
-`pnpm build` writes a static site to `dist/`, and `pnpm preview` serves it. No environment variables or API keys are needed (see `.env.example`).
+No API keys are needed. `.env.example` lists the one optional build setting.
 
-## Deployment
+## Hosting
 
-The production build is a static site, so `dist/` can be hosted on Vercel, Netlify, Cloudflare Pages, S3 or any static host. GitHub Actions (`.github/workflows/ci.yml`) runs lint, tests and the build on every push and pull request. A GitHub Pages workflow is included, but it is turned off and only runs if someone starts it by hand.
+`dist/` is a static site, so any static host works (Vercel, Netlify, Cloudflare Pages, S3). CI runs on every push and pull request. A GitHub Pages workflow is included but switched off; it only runs when started by hand.
 
 ## Roadmap
 
-- Supabase or Postgres backend with team accounts
+- Team accounts with a Postgres or Supabase backend
 - Email and WhatsApp reminders for due follow-ups
-- Lead capture form embeddable on a client website
+- An embeddable lead-capture form that drops enquiries straight into the pipeline
 
 ## License
 
