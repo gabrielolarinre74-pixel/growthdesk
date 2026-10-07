@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { Trash2, CircleArrowUp, ArrowUpDown, Download } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
+import { useFollowUpsStore } from '@/stores/followups-store'
+import { downloadCsv, toCsv } from '@/features/crm/lib/metrics'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -30,48 +31,37 @@ export function DataTableBulkActions<TData>({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
+  const updateMany = useFollowUpsStore((s) => s.updateMany)
+  const selectedTasks = () => selectedRows.map((row) => row.original as Task)
+  const plural = (n: number) => `${n} follow-up${n > 1 ? 's' : ''}`
+
   const handleBulkStatusChange = (status: string) => {
-    const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Updating status...',
-      success: () => {
-        table.resetRowSelection()
-        return `Status updated to "${status}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
-      },
-      error: 'Error',
-    })
+    const tasks = selectedTasks()
+    updateMany(tasks.map((t) => t.id), { status })
     table.resetRowSelection()
+    toast.success(`Moved ${plural(tasks.length)} to "${statuses.find((s) => s.value === status)?.label ?? status}"`)
   }
 
   const handleBulkPriorityChange = (priority: string) => {
-    const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Updating priority...',
-      success: () => {
-        table.resetRowSelection()
-        return `Priority updated to "${priority}" for ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''}.`
-      },
-      error: 'Error',
-    })
+    const tasks = selectedTasks()
+    updateMany(tasks.map((t) => t.id), { priority })
     table.resetRowSelection()
+    toast.success(`Set priority to ${priority} for ${plural(tasks.length)}`)
   }
 
   const handleBulkExport = () => {
-    const selectedTasks = selectedRows.map((row) => row.original as Task)
-    toast.promise(sleep(2000), {
-      loading: 'Exporting tasks...',
-      success: () => {
-        table.resetRowSelection()
-        return `Exported ${selectedTasks.length} task${selectedTasks.length > 1 ? 's' : ''} to CSV.`
-      },
-      error: 'Error',
-    })
+    const tasks = selectedTasks()
+    downloadCsv(
+      `growthdesk-follow-ups-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(tasks, ['id', 'title', 'label', 'status', 'priority'])
+    )
     table.resetRowSelection()
+    toast.success(`Exported ${plural(tasks.length)} to CSV`)
   }
 
   return (
     <>
-      <BulkActionsToolbar table={table} entityName='task'>
+      <BulkActionsToolbar table={table} entityName='follow-up'>
         <DropdownMenu>
           <Tooltip>
             <TooltipTrigger asChild>

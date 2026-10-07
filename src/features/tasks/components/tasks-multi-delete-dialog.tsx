@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,6 +26,7 @@ export function TasksMultiDeleteDialog<TData>({
   const [value, setValue] = useState('')
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
+  const deleteTasks = useFollowUpsStore((s) => s.deleteTasks)
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
@@ -35,17 +36,12 @@ export function TasksMultiDeleteDialog<TData>({
 
     onOpenChange(false)
 
-    toast.promise(sleep(2000), {
-      loading: 'Deleting tasks...',
-      success: () => {
-        setValue('')
-        table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'tasks' : 'task'
-        }`
-      },
-      error: 'Error',
-    })
+    deleteTasks(selectedRows.map((r) => (r.original as { id: string }).id))
+    setValue('')
+    table.resetRowSelection()
+    toast.success(
+      `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'follow-ups' : 'follow-up'}`
+    )
   }
 
   return (
@@ -61,7 +57,7 @@ export function TasksMultiDeleteDialog<TData>({
             size={18}
           />{' '}
           Delete {selectedRows.length}{' '}
-          {selectedRows.length > 1 ? 'tasks' : 'task'}
+          {selectedRows.length > 1 ? 'follow-ups' : 'follow-up'}
         </span>
       }
       desc={
@@ -74,8 +70,8 @@ export function TasksMultiDeleteDialog<TData>({
           className='space-y-4'
         >
           <p className='mb-2'>
-            Are you sure you want to delete the selected tasks? <br />
-            This action cannot be undone.
+            The selected follow-ups will be removed from this browser. This
+            can&apos;t be undone.
           </p>
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>

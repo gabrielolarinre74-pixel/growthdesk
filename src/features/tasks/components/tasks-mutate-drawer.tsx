@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -46,6 +47,8 @@ export function TasksMutateDrawer({
   currentRow,
 }: TaskMutateDrawerProps) {
   const isUpdate = !!currentRow
+  const addTask = useFollowUpsStore((s) => s.addTask)
+  const updateTask = useFollowUpsStore((s) => s.updateTask)
 
   const form = useForm<TaskForm>({
     resolver: zodResolver(formSchema),
@@ -58,10 +61,15 @@ export function TasksMutateDrawer({
   })
 
   const onSubmit = (data: TaskForm) => {
-    // do something with the form data
+    if (currentRow) {
+      updateTask(currentRow.id, data)
+      toast.success(`Updated ${currentRow.id}`)
+    } else {
+      const task = addTask(data)
+      toast.success(`Added ${task.id}`)
+    }
     onOpenChange(false)
     form.reset()
-    showSubmittedData(data)
   }
 
   return (
@@ -74,12 +82,11 @@ export function TasksMutateDrawer({
     >
       <SheetContent className='flex flex-col'>
         <SheetHeader className='text-start'>
-          <SheetTitle>{isUpdate ? 'Update' : 'Create'} Task</SheetTitle>
+          <SheetTitle>{isUpdate ? 'Edit follow-up' : 'New follow-up'}</SheetTitle>
           <SheetDescription>
             {isUpdate
-              ? 'Update the task by providing necessary info.'
-              : 'Add a new task by providing necessary info.'}
-            Click save when you&apos;re done.
+              ? 'Change the details, then save.'
+              : 'Log the next call, email or proposal you owe a lead.'}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>

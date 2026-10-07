@@ -4,9 +4,10 @@ import { TasksDialogs } from './components/tasks-dialogs'
 import { TasksPrimaryButtons } from './components/tasks-primary-buttons'
 import { TasksProvider } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
-import { tasks } from './data/tasks'
+import { useFollowUpsStore } from '@/stores/followups-store'
 
 export function Tasks() {
+  const tasks = useFollowUpsStore((s) => s.tasks)
   return (
     <TasksProvider>
       <AppHeader fixed />

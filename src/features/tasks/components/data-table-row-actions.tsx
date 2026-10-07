@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { labels } from '../data/data'
 import { taskSchema } from '../data/schema'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { useTasks } from './tasks-provider'
 
 type DataTableRowActionsProps<TData> = {
@@ -29,6 +30,8 @@ export function DataTableRowActions<TData>({
   const task = taskSchema.parse(row.original)
 
   const { setOpen, setCurrentRow } = useTasks()
+  const updateTask = useFollowUpsStore((s) => s.updateTask)
+  const duplicateTask = useFollowUpsStore((s) => s.duplicateTask)
 
   return (
     <DropdownMenu modal={false}>
@@ -50,13 +53,23 @@ export function DataTableRowActions<TData>({
         >
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem disabled>Favorite</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => duplicateTask(task.id)}>
+          Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={task.status === 'done'}
+          onClick={() => updateTask(task.id, { status: 'done' })}
+        >
+          Mark as done
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger>Type</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
+            <DropdownMenuRadioGroup
+              value={task.label}
+              onValueChange={(label) => updateTask(task.id, { label })}
+            >
               {labels.map((label) => (
                 <DropdownMenuRadioItem key={label.value} value={label.value}>
                   {label.label}

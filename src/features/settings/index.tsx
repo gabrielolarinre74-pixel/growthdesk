@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { useFont } from '@/context/font-provider'
 import { useTheme } from '@/context/theme-provider'
 import { useCrmStore } from '@/stores/crm-store'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,6 +34,7 @@ export function Settings() {
   const monthlyGoal = useCrmStore((s) => s.monthlyGoal)
   const setMonthlyGoal = useCrmStore((s) => s.setMonthlyGoal)
   const resetDemo = useCrmStore((s) => s.resetDemo)
+  const resetTasks = useFollowUpsStore((s) => s.resetTasks)
   const [goal, setGoal] = useState(String(monthlyGoal))
 
   const saveGoal = () => {
@@ -137,8 +139,9 @@ export function Settings() {
             <Button
               variant='outline'
               onClick={() => {
-                if (!window.confirm('Replace all leads with fresh sample data?')) return
+                if (!window.confirm('Replace all leads and follow-ups with fresh sample data?')) return
                 resetDemo()
+                resetTasks()
                 toast.success('Sample data restored')
               }}
             >

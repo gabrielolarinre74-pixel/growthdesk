@@ -2,11 +2,9 @@ import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { type Task } from '../data/schema'
 import { TasksMutateDrawer } from './tasks-mutate-drawer'
-
-vi.mock('@/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
 
 const MOCK_TASK = {
   id: 'task-1',
@@ -17,7 +15,10 @@ const MOCK_TASK = {
 } as const satisfies Task
 
 describe('TasksMutateDrawer', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useFollowUpsStore.setState({ tasks: [] })
+  })
 
   it('renders create title and description', async () => {
     const { getByRole, getByText } = await render(
@@ -26,9 +27,9 @@ describe('TasksMutateDrawer', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Create Task/i,
+      name: /New follow-up/i,
     })
-    const desc = getByText(/Add a new task/i)
+    const desc = getByText(/Log the next call/i)
 
     await expect.element(title).toBeInTheDocument()
     await expect.element(desc).toBeInTheDocument()
@@ -41,9 +42,9 @@ describe('TasksMutateDrawer', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Update Task/i,
+      name: /Edit follow-up/i,
     })
-    const desc = getByText(/Update the task/i)
+    const desc = getByText(/Change the details/i)
 
     const titleInput = getByRole('textbox', { name: /Title/i })
     const statusSelect = getByRole('combobox', { name: /Status/i })
@@ -80,7 +81,7 @@ describe('TasksMutateDrawer', () => {
       .toBeInTheDocument()
   })
 
-  it('submits create form and shows submitted data', async () => {
+  it('saves a new follow-up to the store', async () => {
     const onOpenChange = vi.fn()
     const { getByRole } = await render(
       <TasksMutateDrawer open onOpenChange={onOpenChange} />
@@ -102,13 +103,27 @@ describe('TasksMutateDrawer', () => {
     expect(onOpenChange).toHaveBeenCalledOnce()
     expect(onOpenChange).toHaveBeenCalledWith(false)
 
-    expect(showSubmittedData).toHaveBeenCalledOnce()
-    expect(showSubmittedData).toHaveBeenCalledWith({
+    const { tasks } = useFollowUpsStore.getState()
+    expect(tasks).toHaveLength(1)
+    expect(tasks[0]).toEqual({
+      id: 'FU-1001',
       title: 'New task title',
       status: 'todo',
       label: 'call',
       priority: 'low',
     })
+  })
+
+  it('updates an existing follow-up in place', async () => {
+    useFollowUpsStore.setState({ tasks: [MOCK_TASK] })
+    const { getByRole } = await render(
+      <TasksMutateDrawer open onOpenChange={vi.fn()} currentRow={MOCK_TASK} />
+    )
+    await userEvent.fill(getByRole('textbox', { name: /Title/i }), 'Renamed')
+    await userEvent.click(getByRole('button', { name: /Save changes/i }))
+    expect(useFollowUpsStore.getState().tasks).toEqual([
+      { ...MOCK_TASK, title: 'Renamed' },
+    ])
   })
 
   it('closes when Close is clicked', async () => {

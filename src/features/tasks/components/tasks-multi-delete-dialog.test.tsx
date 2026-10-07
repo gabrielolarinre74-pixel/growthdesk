@@ -3,15 +3,16 @@ import { createTableMock } from '@/test-utils/tanstack-table'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { TasksMultiDeleteDialog } from './tasks-multi-delete-dialog'
 
-vi.mock('@/lib/utils', async (orig) => ({
-  ...(await orig()),
-  sleep: vi.fn(() => Promise.resolve()),
-}))
 
 describe('TasksMultiDeleteDialog', () => {
-  beforeEach(() => vi.clearAllMocks())
+  const task = (id: string) => ({ id, title: id, status: 'todo', label: 'call', priority: 'low' })
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useFollowUpsStore.setState({ tasks: [task('FU-1001'), task('FU-1002'), task('FU-1003')] })
+  })
 
   it('renders the dialog with the correct title, description, input and buttons', async () => {
     const { table } = createTableMock()
@@ -22,11 +23,9 @@ describe('TasksMultiDeleteDialog', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Delete 2 tasks/i,
+      name: /Delete 2 follow-ups/i,
     })
-    const desc = getByText(
-      'Are you sure you want to delete the selected tasks?'
-    )
+    const desc = getByText(/The selected follow-ups will be removed/)
     const confirmDeleteInput = getByRole('textbox', {
       name: /Confirm by typing "DELETE"/i,
     })
@@ -112,7 +111,7 @@ describe('TasksMultiDeleteDialog', () => {
     await expect.element(confirmDeleteInput).toHaveValue('')
   })
 
-  it('shows the submitted data when deleted successfully', async () => {
+  it('removes the selected follow-ups from the store', async () => {
     const { table, resetRowSelection } = createTableMock()
     const onOpenChange = vi.fn()
     const { getByRole } = await render(
@@ -135,6 +134,7 @@ describe('TasksMultiDeleteDialog', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false)
 
     await vi.waitFor(() => expect(resetRowSelection).toHaveBeenCalledOnce())
+    expect(useFollowUpsStore.getState().tasks.map((t) => t.id)).toEqual(['FU-1003'])
   })
 
   it('deletes successfully when press Enter key on the confirm delete input', async () => {

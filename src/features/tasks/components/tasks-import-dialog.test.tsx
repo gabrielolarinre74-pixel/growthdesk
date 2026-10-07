@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { TasksImportDialog } from './tasks-import-dialog'
 
-vi.mock('@/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
-
 describe('TasksImportDialog', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useFollowUpsStore.setState({ tasks: [] })
+  })
 
   it('renders the dialog with the correct title, description, file input and buttons', async () => {
     const onOpenChange = vi.fn()
@@ -18,9 +19,9 @@ describe('TasksImportDialog', () => {
 
     const title = getByRole('heading', {
       level: 2,
-      name: /Import Tasks/i,
+      name: /Import follow-ups/i,
     })
-    const desc = getByText('Import tasks quickly from a CSV file')
+    const desc = getByText(/Upload a CSV with a title column/)
     const fileInput = getByLabelText('File')
     const closeButtons = getByRole('dialog')
       .getByRole('button', { name: 'Close' })
@@ -46,30 +47,35 @@ describe('TasksImportDialog', () => {
 
     await expect.element(getByText('Please upload a file.')).toBeInTheDocument()
     expect(onOpenChange).not.toHaveBeenCalled()
-    expect(showSubmittedData).not.toHaveBeenCalled()
+    expect(useFollowUpsStore.getState().tasks).toHaveLength(0)
   })
 
-  it('calls showSubmittedData and closes when a CSV file is imported', async () => {
+  it('adds the CSV rows as follow-ups and closes', async () => {
     const onOpenChange = vi.fn()
     const { getByRole, getByLabelText } = await render(
       <TasksImportDialog open onOpenChange={onOpenChange} />
     )
 
-    const csv = new File(['a,b'], 'tasks.csv', { type: 'text/csv' })
+    const csv = new File(
+      ['title,status,type,priority\nCall Acme back,todo,call,high\n"Send quote, v2",,email,\n'],
+      'tasks.csv',
+      { type: 'text/csv' }
+    )
     await userEvent.upload(getByLabelText('File'), csv)
 
     const importButton = getByRole('button', { name: /^Import$/i })
     await userEvent.click(importButton)
 
-    expect(showSubmittedData).toHaveBeenCalledOnce()
-    expect(showSubmittedData).toHaveBeenCalledWith(
-      {
-        name: 'tasks.csv',
-        size: csv.size,
-        type: 'text/csv',
-      },
-      'You have imported the following file:'
-    )
+    await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalled())
+    expect(useFollowUpsStore.getState().tasks.map((t) => t.title)).toEqual([
+      'Call Acme back',
+      'Send quote, v2',
+    ])
+    expect(useFollowUpsStore.getState().tasks[1]).toMatchObject({
+      status: 'todo',
+      label: 'email',
+      priority: 'medium',
+    })
     expect(onOpenChange).toHaveBeenCalledOnce()
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
@@ -106,7 +112,7 @@ describe('TasksImportDialog', () => {
 
     expect(onOpenChange).toHaveBeenCalledOnce()
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(showSubmittedData).not.toHaveBeenCalled()
+    expect(useFollowUpsStore.getState().tasks).toHaveLength(0)
 
     await userEvent.click(getByRole('button', { name: /Reopen/i }))
     const closeButton = getByRole('dialog')
@@ -118,6 +124,6 @@ describe('TasksImportDialog', () => {
 
     expect(onOpenChange).toHaveBeenCalledTimes(2)
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(showSubmittedData).not.toHaveBeenCalled()
+    expect(useFollowUpsStore.getState().tasks).toHaveLength(0)
   })
 })

@@ -1,4 +1,5 @@
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
+import { useFollowUpsStore } from '@/stores/followups-store'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { TasksImportDialog } from './tasks-import-dialog'
 import { TasksMutateDrawer } from './tasks-mutate-drawer'
@@ -6,6 +7,7 @@ import { useTasks } from './tasks-provider'
 
 export function TasksDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useTasks()
+  const deleteTasks = useFollowUpsStore((s) => s.deleteTasks)
   return (
     <>
       <TasksMutateDrawer
@@ -49,18 +51,15 @@ export function TasksDialogs() {
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)
-              showSubmittedData(
-                currentRow,
-                'The following task has been deleted:'
-              )
+              deleteTasks([currentRow.id])
+              toast.success(`Deleted ${currentRow.id}`)
             }}
             className='max-w-md'
-            title={`Delete this task: ${currentRow.id} ?`}
+            title={`Delete ${currentRow.id}?`}
             desc={
               <>
-                You are about to delete a task with the ID{' '}
-                <strong>{currentRow.id}</strong>. <br />
-                This action cannot be undone.
+                <strong>{currentRow.title}</strong> will be removed from
+                your follow-ups. This can&apos;t be undone.
               </>
             }
             confirmText='Delete'

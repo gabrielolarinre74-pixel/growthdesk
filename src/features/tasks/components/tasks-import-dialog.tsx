@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
+import { useFollowUpsStore } from '@/stores/followups-store'
+import { parseFollowUpsCsv } from '../lib/csv'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -29,8 +31,13 @@ const formSchema = z.object({
       message: 'Please upload a file.',
     })
     .refine(
-      (files) => ['text/csv'].includes(files?.[0]?.type),
-      'Please upload csv format.'
+      (files) =>
+        files?.[0]?.type === 'text/csv' || /\.csv$/i.test(files?.[0]?.name ?? ''),
+      'Please choose a .csv file.'
+    )
+    .refine(
+      (files) => (files?.[0]?.size ?? 0) <= 1024 * 1024,
+      'Keep the file under 1 MB.'
     ),
 })
 
@@ -49,19 +56,29 @@ export function TasksImportDialog({
   })
 
   const fileRef = form.register('file')
+  const importTasks = useFollowUpsStore((s) => s.importTasks)
 
-  const onSubmit = () => {
-    const file = form.getValues('file')
-
-    if (file && file[0]) {
-      const fileDetails = {
-        name: file[0].name,
-        size: file[0].size,
-        type: file[0].type,
+  const onSubmit = async () => {
+    const file = form.getValues('file')?.[0]
+    if (!file) return
+    try {
+      const { tasks, skipped } = parseFollowUpsCsv(await file.text())
+      if (tasks.length === 0) {
+        form.setError('file', { message: 'No rows with a title were found.' })
+        return
       }
-      showSubmittedData(fileDetails, 'You have imported the following file:')
+      const count = importTasks(tasks)
+      toast.success(
+        `Imported ${count} follow-up${count > 1 ? 's' : ''}` +
+          (skipped ? ` (${skipped} empty row${skipped > 1 ? 's' : ''} skipped)` : '')
+      )
+      onOpenChange(false)
+      form.reset()
+    } catch (e) {
+      form.setError('file', {
+        message: e instanceof Error ? e.message : 'Could not read that file.',
+      })
     }
-    onOpenChange(false)
   }
 
   return (
@@ -74,9 +91,9 @@ export function TasksImportDialog({
     >
       <DialogContent className='gap-2 sm:max-w-sm'>
         <DialogHeader className='text-start'>
-          <DialogTitle>Import Tasks</DialogTitle>
+          <DialogTitle>Import follow-ups</DialogTitle>
           <DialogDescription>
-            Import tasks quickly from a CSV file.
+            Upload a CSV with a title column. Status, type and priority are optional.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -90,7 +107,7 @@ export function TasksImportDialog({
                   <FormControl>
                     <Input
                       type='file'
-                      accept='text/csv'
+                      accept='.csv,text/csv'
                       {...fileRef}
                       className='h-8 py-0'
                     />

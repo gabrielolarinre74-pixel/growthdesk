@@ -1,7 +1,6 @@
+import { type Task } from './schema'
 import { faker } from '@faker-js/faker'
 
-// Fixed seed so the demo data is the same on every load
-faker.seed(12345)
 
 const templates = {
   call: [
@@ -35,7 +34,11 @@ const services = [
   'UI/UX audit',
 ]
 
-export const tasks = Array.from({ length: 60 }, () => {
+/** Deterministic sample follow-ups (same list on every reset). */
+export function sampleTasks(): Task[] {
+  faker.seed(12345)
+  const used = new Set<number>()
+  return Array.from({ length: 60 }, () => {
   const statuses = [
     'todo',
     'in progress',
@@ -49,8 +52,11 @@ export const tasks = Array.from({ length: 60 }, () => {
   const priorities = ['low', 'medium', 'high'] as const
   const company = faker.company.name()
 
+  let n = faker.number.int({ min: 1000, max: 9999 })
+  while (used.has(n)) n++
+  used.add(n)
   return {
-    id: `FU-${faker.number.int({ min: 1000, max: 9999 })}`,
+    id: `FU-${n}`,
     title: faker.helpers
       .arrayElement(templates[label])
       .replace('{company}', company)
@@ -58,10 +64,6 @@ export const tasks = Array.from({ length: 60 }, () => {
     status: faker.helpers.arrayElement(statuses),
     label,
     priority: faker.helpers.arrayElement(priorities),
-    createdAt: faker.date.past(),
-    updatedAt: faker.date.recent(),
-    assignee: faker.person.fullName(),
-    description: faker.lorem.paragraph({ min: 1, max: 2 }),
-    dueDate: faker.date.soon({ days: 14 }),
   }
 })
+}
