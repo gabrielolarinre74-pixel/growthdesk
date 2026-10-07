@@ -8,7 +8,7 @@ Most small businesses track leads in a mix of WhatsApp chats, inboxes and spread
 - Which channels bring in leads that actually turn into paying clients?
 - Who do we need to call back today?
 
-**Live demo:** https://gabrielolarinre74-pixel.github.io/growthdesk/ (runs entirely in your browser with sample data, no sign-up)
+**Live demo:** [Open in StackBlitz](https://stackblitz.com/github/gabrielolarinre74-pixel/growthdesk) (runs in your browser with sample data, no sign-up)
 
 ![Growth overview](docs/screenshots/dashboard.png)
 
