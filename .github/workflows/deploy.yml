@@ -1,8 +1,8 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (manual, disabled)
 
+# Automatic deploys are turned off. This workflow only runs if it is
+# started by hand from the Actions tab (and the workflow is enabled).
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
